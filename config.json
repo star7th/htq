@@ -1,0 +1,8 @@
+{
+  "app_key": "sbvrgrgbg10rgye5y5ebfbgdyyhdgsrg",
+  "app_token": "usbvbhu0srfefeafrrgy5rgrgrfrfegsrg",
+  "api_port":5999,
+  "redis_host":"127.0.0.1",
+  "redis_port":6379,  
+  "redis_key_prefix":"htq_" 
+}

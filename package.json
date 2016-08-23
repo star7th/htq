@@ -1,0 +1,23 @@
+{
+  "name": "htq",
+  "version": "1.0.0",
+  "description": "Http Task Queue",
+  "main": "htq.js",
+  "scripts": {
+    "test": "node htq.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "author": "star7th",
+  "license": "apache2.0",
+  "dependencies":{
+    "express": "~4.14.0",
+    "body-parser": "~1.15.2",
+    "cookie-parser": "~1.4.3",
+    "multer": "~1.2.0",
+    "request": "~2.74.0",
+    "redis": "~2.6.2"
+  }
+}
