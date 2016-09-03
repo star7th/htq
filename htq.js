@@ -1,3 +1,7 @@
+/**
+ * @author  xing7th@gmail.com
+ * @website http://www.showdoc.cc/htq
+ */
 
 var cp = require('child_process');
 
