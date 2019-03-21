@@ -146,7 +146,7 @@ app.post('/api/addTask', multipartMiddleware ,function (req, res){
    res.header("Access-Control-Allow-Origin", "*");
    res.header("Access-Control-Allow-Credentials", "true");
 
-   var queue_name = config.redis_key_prefix+req.body.queue_name;
+   var queue_name = req.body.queue_name ? config.redis_key_prefix+req.body.queue_name : config.redis_key_prefix+"default_queue";
    var url = req.body.url;
    var post_app_key = req.body.app_key;
    var post_app_token = req.body.app_token;
@@ -158,28 +158,32 @@ app.post('/api/addTask', multipartMiddleware ,function (req, res){
    //判断是否在哈希表里存在队列名
    redis_client.hexists(config.redis_key_prefix+"queue_list",queue_name,function(err, reply){
 		if (!reply) {
-			res.send('{"error_code":1003,"message":"队列不存在，请先创建"}');
-		}else{
-         if (execute_time) {
-            var score = Date.parse(new Date(execute_time));
-         }else{
-            var score = Date.parse(new Date());
-         }
-		   
-		   if (url.indexOf("?") > -1 ) {
-		   		url += "&htq_no_repeat="+score+Math.random().toFixed(4);
-		   }else{
-		   		url += "?htq_no_repeat="+score+Math.random().toFixed(4);
-		   }
-			redis_client.zadd(queue_name,score,url,function(err, reply){
-				if (reply) {
-					res.send( '{"error_code":0,"message":"添加成功"}');
-				}else{
-					res.send('{"error_code":1001,"message":"添加失败"}');
-				}
-				
-			});
+			//res.send('{"error_code":1003,"message":"队列不存在，请先创建"}');
+         //若不存在，则默认创建
+         var attribute = {"type":"real_time"};
+         redis_client.hmset(config.redis_key_prefix+"queue_list",queue_name,JSON.stringify(attribute));
 		}
+
+      if (execute_time) {
+         var score = Date.parse(new Date(execute_time));
+      }else{
+         var score = Date.parse(new Date());
+      }
+      
+      if (url.indexOf("?") > -1 ) {
+            url += "&htq_no_repeat="+score+Math.random().toFixed(4);
+      }else{
+            url += "?htq_no_repeat="+score+Math.random().toFixed(4);
+      }
+      redis_client.zadd(queue_name,score,url,function(err, reply){
+         if (reply) {
+            res.send( '{"error_code":0,"message":"添加成功"}');
+         }else{
+            res.send('{"error_code":1001,"message":"添加失败"}');
+         }
+         
+      });
+
    });
 
 	
