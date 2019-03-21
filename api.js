@@ -3,19 +3,16 @@
  * @website http://www.showdoc.cc/htq
  */
 var express = require('express');
-var bodyParser =  require("body-parser"); 
+var multipart =  require("connect-multiparty"); 
 var cookieParser =  require("cookie-parser"); 
 var redis = require('redis');
 var request = require('request');
 var fs = require('fs');
 var config = JSON.parse(fs.readFileSync('./config.json').toString());
 var app = express();
-app.use(bodyParser.json({limit: '10mb'}));  
-app.use(bodyParser.urlencoded({            
-  extended: true
-}));
 var redis_client = redis.createClient(config.redis_port,config.redis_host); //creates a new client
 
+var multipartMiddleware = multipart();
 
 //  首页
 app.get('/', function (req, res) {
@@ -23,10 +20,9 @@ app.get('/', function (req, res) {
 });
 
 //添加队列
-app.post('/api/addQueue', function (req, res){
+app.post('/api/addQueue', multipartMiddleware ,  function (req, res){
    res.header("Access-Control-Allow-Origin", "*");
    res.header("Access-Control-Allow-Credentials", "true");
-
    var queue_name = config.redis_key_prefix+req.body.queue_name;
    var type = req.body.type;
    var post_app_key = req.body.app_key;
@@ -59,7 +55,7 @@ app.post('/api/addQueue', function (req, res){
 });
 
 //删除队列
-app.post('/api/deleteQueue', function (req, res){
+app.post('/api/deleteQueue', multipartMiddleware ,function (req, res){
    res.header("Access-Control-Allow-Origin", "*");
    res.header("Access-Control-Allow-Credentials", "true");
 
@@ -92,7 +88,7 @@ app.post('/api/deleteQueue', function (req, res){
 });
 
 //获取所有队列
-app.post('/api/allQueue', function (req, res){
+app.post('/api/allQueue', multipartMiddleware , function (req, res){
    res.header("Access-Control-Allow-Origin", "*");
    res.header("Access-Control-Allow-Credentials", "true");
 
@@ -123,7 +119,7 @@ app.post('/api/allQueue', function (req, res){
 });
 
 //获取某个队列当前的任务数
-app.post('/api/countQueue', function (req, res){
+app.post('/api/countQueue', multipartMiddleware , function (req, res){
    res.header("Access-Control-Allow-Origin", "*");
    res.header("Access-Control-Allow+-Credentials", "true");
 
@@ -146,7 +142,7 @@ app.post('/api/countQueue', function (req, res){
 
 
 //为某个队列添加任务
-app.post('/api/addTask', function (req, res){
+app.post('/api/addTask', multipartMiddleware ,function (req, res){
    res.header("Access-Control-Allow-Origin", "*");
    res.header("Access-Control-Allow-Credentials", "true");
 
