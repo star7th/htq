@@ -4,7 +4,7 @@ ini_set("display_errors", "On");
 error_reporting(E_ALL | E_STRICT);
 include('HTQClient.class.php');
 
-$HTQClient = new HTQClient('sbvrgrgbg10rgrsefrfrrgshtdbvbrsgsrrwgthtdye5y5ebfbgdyyhdgsrg','usbvbhu01zsrfrgrrgrgrtdbvdfeffdgfsbrgrhssrfefeafreg4t5frwgrrgrgy5rgrgrfrfegsrg');
+$HTQClient = new HTQClient('sbvrgrgbg10rgye5y5ebfbgdyyhdgsrg','usbvbhu0srfefeafrrgy5rgrgrfrfegsrg');
 
 $ret = $HTQClient->addQueue("php_test2","real_time");
 var_dump($ret);
