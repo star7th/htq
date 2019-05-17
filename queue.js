@@ -12,10 +12,25 @@ const redis_client = asyncRedis.createClient(config.redis_port,config.redis_host
 console.log("后台队列服务已经启动，随时等待新队列任务");
 var queue_status_array = [];
 
+//设置一个循环任务，1天检测一次。当队列空的时候，则停止本进程（父进程会重新启动本进程）
+setInterval(function(){
+	var isDoing = 0 ;
+	for( let x in queue_status_array){
+		if (queue_status_array[x]) {
+			isDoing = 1 ;
+		};
+	}
+	if (! isDoing ){
+		process.exit();
+	};
+},1*24*60*60*1000);
+
+
 //定时循环读取redis。不用担心会无序并发运行，后面会根据queue_status_array来控制同一时间只操作一个队列
 setInterval(function(){
 	check_queue_hash();
 },1000);
+
 
 
 //扫描整个队列哈希表
@@ -32,7 +47,7 @@ async function check_queue_hash(){
 					////console.log('队列'+single_queue_name+'正操作中，不重复启动');
 				}else{
 					//执行单个队列single_queue_name
-					await run_queue(single_queue_name,single_attribute);
+					run_queue(single_queue_name,single_attribute);
 				}
 				
 			};

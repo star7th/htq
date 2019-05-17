@@ -20,6 +20,7 @@ function run_js(js_name){
 
 	//子进程关闭
 	child.on('close',function(code,signal){
+		//console.log("run "+js_name)
 		run_js(js_name);
 	});	
 }
