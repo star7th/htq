@@ -73,7 +73,13 @@ async function run_queue(queue_name,attribute){
 			let reply =  await redis_client.hget(times_queue,url) ;
 			if (reply) {
 				var execution_times = parseInt(reply) ? parseInt(reply) : 0 ;
-				let response = await fetch(request_url,{ timeout : 30*1000});
+				try{
+					let response = await fetch(request_url,{ timeout : 30*1000});
+				}
+				catch(e){
+					console.log(e);
+					return ;
+				}
 				let body = await response.text();
 
 				////console.log("第"+(execution_times+1)+"次执行来自"+queue_name+"的url："+request_url);
@@ -106,7 +112,12 @@ async function run_queue(queue_name,attribute){
 		 //如果是实时队列或者定时队列
 			//删除这个元素。不在执行url后在删除是为了防止因为执行不了url而造成阻塞
 			await redis_client.zrem(queue_name,url);
-			await fetch(request_url,{ timeout : 30*1000});
+			try{
+				await fetch(request_url,{ timeout : 30*1000});
+			}
+			catch(e){
+				console.log(e);
+			}
 			//console.log(request_url);
 			await run_queue(queue_name,attribute);
 			return ;
