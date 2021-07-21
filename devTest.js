@@ -3,16 +3,16 @@
  * @website http://www.showdoc.cc/htq
  */
 
+const fs = require('fs');
+const config = JSON.parse(fs.readFileSync('./config.json').toString());
 const express = require('express');
 const bodyParser =  require("body-parser"); 
 const redis = require('redis');
 const request = require('request');
 const asyncRedis = require("async-redis");
-const client = asyncRedis.createClient();
-const fs = require('fs');
+const client = asyncRedis.createClient(config.redis_port,config.redis_host);
 const fetch = require("node-fetch");
 
-const config = JSON.parse(fs.readFileSync('./config.json').toString());
 const redis_client = asyncRedis.createClient(config.redis_port,config.redis_host); //creates a new client
 console.log("后台队列服务已经启动，随时等待新队列任务");
 var queue_status_array = [];
