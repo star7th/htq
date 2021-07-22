@@ -164,12 +164,12 @@ app.post('/api/addTask', multipartMiddleware ,function (req, res){
          redis_client.hmset(config.redis_key_prefix+"queue_list",queue_name,JSON.stringify(attribute));
 		}
 
-      if (execute_time) {
+      if (check_dateTime(execute_time)) {
          var score = Date.parse(new Date(execute_time));
       }else{
          var score = Date.parse(new Date());
       }
-      
+
       if (url.indexOf("?") > -1 ) {
             url += "&htq_no_repeat="+score+Math.random().toFixed(4);
       }else{
@@ -195,6 +195,20 @@ function check_token(post_app_key,post_app_token){
 	}else{
 		return false;
 	}
+}
+
+/**
+ * 判断是否合法日期
+ * @param str
+ * @returns {boolean}
+ */
+function check_dateTime(str)
+{
+    var reg = /^(\d{1,4})(-|\/)(\d{1,2})\2(\d{1,2}) (\d{1,2}):(\d{1,2}):(\d{1,2})$/;
+    var r = str.match(reg);
+    if(r==null)return false;
+    var d= new Date(r[1], r[3]-1,r[4],r[5],r[6],r[7]);
+    return (d.getFullYear()==r[1]&&(d.getMonth()+1)==r[3]&&d.getDate()==r[4]&&d.getHours()==r[5]&&d.getMinutes()==r[6]&&d.getSeconds()==r[7]);
 }
 
 var server = app.listen(config.api_port, function () {
