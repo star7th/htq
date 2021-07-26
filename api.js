@@ -151,6 +151,7 @@ app.post('/api/addTask', multipartMiddleware ,function (req, res){
    var post_app_key = req.body.app_key;
    var post_app_token = req.body.app_token;
    var execute_time = req.body.execute_time;
+   var json={};
    if(!check_token(post_app_key,post_app_token)){
    		res.send('{"error_code":1000,"message":"认证失败"}');
    		return false;
@@ -165,9 +166,9 @@ app.post('/api/addTask', multipartMiddleware ,function (req, res){
 		}
 
       if (check_dateTime(execute_time)) {
-         var score = Date.parse(new Date(execute_time));
+         var score = Date.parse(execute_time);
       }else{
-         var score = Date.parse(new Date());
+         var score = Date.parse();
       }
 
       if (url.indexOf("?") > -1 ) {
@@ -175,7 +176,9 @@ app.post('/api/addTask', multipartMiddleware ,function (req, res){
       }else{
             url += "?htq_no_repeat="+score+Math.random().toFixed(4);
       }
-      redis_client.zadd(queue_name,score,url,function(err, reply){
+
+      json['url']=url;
+      redis_client.zadd(queue_name,score,JSON.stringify(json),function(err, reply){
          if (reply) {
             res.send( '{"error_code":0,"message":"添加成功"}');
          }else{
