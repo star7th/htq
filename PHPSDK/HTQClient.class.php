@@ -58,13 +58,16 @@ class HTQClient
 		return $this->_post($url,$data);
 	}
 
-	public function addTask($queue_name , $url , $execute_time = 0 ){
+	public function addTask($queue_name , $url ,$method='GET',$header=[],$data=[], $execute_time = 0 ){
 		$post_data = array(
 			"app_key"=>$this->app_key,
 			"app_token"=>$this->app_token,
 			"queue_name"=>$queue_name,
 			"url"=>$url,
 			"execute_time"=>$execute_time,
+            "method"=>$method,
+            "header"=>json_encode($header),
+            "data"=>json_encode($data)
 			);
 		$url = $this->htq_addr . '/api/addTask';
 		return $this->_post($url,$post_data);
