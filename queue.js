@@ -7,7 +7,7 @@ const config = JSON.parse(fs.readFileSync('./config.json').toString());
 const asyncRedis = require("async-redis");
 const client = asyncRedis.createClient(config.redis_port,config.redis_host);
 const fetch = require("node-fetch");
-
+const FormData = require('form-data');
 const redis_client = asyncRedis.createClient(config.redis_port,config.redis_host); //creates a new client
 console.log("后台队列服务已经启动，随时等待新队列任务");
 var queue_status_array = [];
@@ -63,7 +63,15 @@ async function run_queue(queue_name,attribute){
 	var cur_time = Date.parse(new Date());
 	var reply =  await redis_client.zrangebyscore(queue_name,0,cur_time,'LIMIT',0,1);
 	if (reply && reply[0] && reply[0] != '' && reply[0] != 'undefined') {
-		var url = reply[0] ;
+		var json = JSON.parse( reply[0]);
+		var url = json['url'];
+		var data = json['data'];
+		var form = new FormData();
+		for (var value in data) {
+			form.append(value,data[value]);
+		}
+		var headers = json['header'];
+		var method = json['method'];
 		//为了防止redis元素重复，在添加url的时候自动加了些随机数。现在需要去掉随机数才是真正的访问url
 		var request_url = url.substring(0 ,url.indexOf("htq_no_repeat=")-1 );
 		//如果是可变队列
@@ -74,7 +82,7 @@ async function run_queue(queue_name,attribute){
 			if (reply) {
 				var execution_times = parseInt(reply) ? parseInt(reply) : 0 ;
 				try{
-					let response = await fetch(request_url,{ timeout : 30*1000});
+					let response = await fetch(request_url,{method:method,headers:headers,body:form, timeout : 30*1000});
 				}
 				catch(e){
 					console.log(e);
@@ -111,9 +119,9 @@ async function run_queue(queue_name,attribute){
 		}else{
 		 //如果是实时队列或者定时队列
 			//删除这个元素。不在执行url后在删除是为了防止因为执行不了url而造成阻塞
-			await redis_client.zrem(queue_name,url);
+			await redis_client.zrem(queue_name,reply[0]);
 			try{
-				await fetch(request_url,{ timeout : 30*1000});
+				await fetch(request_url,{method:method,headers:headers,body:form, timeout : 30*1000});
 			}
 			catch(e){
 				console.log(e);
