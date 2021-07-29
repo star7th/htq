@@ -151,7 +151,7 @@ app.post('/api/addTask', multipartMiddleware ,function (req, res){
    var post_app_key = req.body.app_key;
    var post_app_token = req.body.app_token;
    var execute_time = req.body.execute_time;
-   var method = req.body.method;
+   var method = req.body.method ? req.body.method :'get' ;
    var header = req.body.header;
    var data = req.body.data;
    var json={};
