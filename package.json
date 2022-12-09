@@ -17,7 +17,7 @@
     "body-parser": "^1.18.3",
     "connect-multiparty": "^2.2.0",
     "cookie-parser": "~1.4.3",
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "multer": "~1.2.0",
     "node-fetch": "^2.6.1",
     "redis": "~2.6.2",
